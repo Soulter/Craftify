@@ -17,6 +17,14 @@ The dataset is 64x64 skin images, if you only want to train the head part like m
 |     |--Skins
 ```
 
+## Demo(Head part)
+
+simple readme :p
+[https://api.soulter.top/craftify](https://api.soulter.top/craftify)
+
+image generate:
+[https://api.soulter.top/craftify/predict](https://api.soulter.top/craftify/predict)
+
 ## Usage
 
 ### Arguments
