@@ -1,6 +1,7 @@
 # Craftify
 
 ![demo_head](output/output_head_0.png)
+![demo_head](output/output_head_1.png)
 
 Generate Minecraft Skin by using DCGAN. I trained over 900,000 skins(dataset: dataset: https://www.kaggle.com/datasets/sha2048/minecraft-skin-dataset/data)
 
@@ -13,7 +14,7 @@ The dataset is 64x64 skin images, if you only want to train the head part like m
 ```
 |--data
 |  |--skin
-|     |--Skin
+|     |--Skins
 ```
 
 ## Usage

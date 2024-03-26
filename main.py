@@ -235,7 +235,7 @@ def predict_flow(netG: GeneratorDCGAN, nz, device, with_pth = None, num = 1, num
 
 if __name__ == "__main__":
     params = {
-        "dataroot": "data/betterskinshead/",
+        "dataroot": "data/skin/SkinsOnlyHead",
         "workers": 2,
         "batch_size": 128,
         "image_size": 64,
@@ -255,11 +255,11 @@ if __name__ == "__main__":
     }
     
     # If you dont want to train, you can comment this two lines
-    params1 = train_flow(**params)
-    params.update(params1)
+    # params1 = train_flow(**params)
+    # params.update(params1)
     
     # If you don't want to train, you can uncomment this line
-    # params["netG_path"] = "pth_release/t1_g_head.pth"
+    params["netG_path"] = "pth_release/t1_g_head.pth"
     
     num = 1
     num_in_a_pic = 64
