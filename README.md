@@ -19,26 +19,32 @@ The dataset is 64x64 skin images, if you only want to train the head part like m
 
 ## Usage
 
-### 1. Download Dataset
+### Arguments
+```py 
+args.add_argument("--dataroot", type=str, default="data/skin/SkinsOnlyHead") # dataset root path
+args.add_argument("--type", type=str, default="head") # head or full skin training
+args.add_argument("--onlypredict", type=bool, default=False) # only predict. default model is pth_release/t1_g_head.pth
+args.add_argument("--gmodelpath", type=str, default="pth_release/t1_g_head.pth") # generator model path
+```
+
+### Download Dataset
 The dataset is provided by `SHA2048`. You can download it from [here](https://www.kaggle.com/datasets/sha2048/minecraft-skin-dataset/data).
 
 And unzip to `data/skin/` folder.
 
-### 2. Train
+### Train(Only Head)
 ```bash
-python3 main.py
+python3 crop_head.py
+python3 main.py --type head --dataroot data/skin/Skins_head_88
 ```
-
-> You may need to change the path of the dataset in `main.py 236L`.
 
 This command will automatically train the model and save the model to `pth_release/` folder, and predict Minecraft skin(head) images to `output/` folder.
 
-```py
-# main.py 255L
-# If you dont want to train, you can comment this two lines
-params1 = train_flow(**params)
-params.update(params1)
-
-# If you don't want to train, you can uncomment this line
-# params["netG_path"] = "pth_release/t1_g_head.pth"
+### Train(Full Skin Part)
+```bash
+python3 clean_data_full_skin.py
+python3 main.py --type full --dataroot data/skin/Skins
 ```
+
+This command will automatically train the model and save the model to `pth_release/` folder, and predict Minecraft skin(head) images to `output/` folder.
+

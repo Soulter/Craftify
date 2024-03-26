@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
 from PIL import Image
+import argparse
 
 from model_dcgan import GeneratorDCGAN, DiscriminatorDCGAN
 
@@ -191,6 +192,35 @@ def handle_output_head(outputs: list[torch.Tensor], path_dir: str = "output/"):
         grid = vutils.make_grid(output, padding=2, normalize=True)
         vutils.save_image(grid, f"{path_dir}/output_head_{i}.png")
         i += 1
+
+def handle_output_all(outputs: list[torch.Tensor], mask, path_dir: str = "output/"):
+    '''
+    将网络的输出进行后处理
+    
+    output shape: (n, 3, 64, 64)
+    '''
+    
+    if not os.path.exists(path_dir):
+        os.makedirs(path_dir)
+    
+    # 创建n个4通道的图像
+    print("outputs", len(outputs))
+    for j in range(len(outputs)):
+        output = outputs[j]
+        n = output.shape[0]
+        output_4 = torch.zeros(n, 4, 64, 64)
+        
+        # 将mask应用到每个图像上
+        for i in range(n):
+            output_4[i][0] = output[i][0] * mask
+            output_4[i][1] = output[i][1] * mask
+            output_4[i][2] = output[i][2] * mask
+            output_4[i][3] = torch.tensor(mask) # mask
+
+        # 输出
+        for o in output_4:
+            vutils.save_image(o, f"output/output_test_{j}.png", normalize=True)
+            j+=1
         
 def train_flow(**kwargs) -> tuple[GeneratorDCGAN, DiscriminatorDCGAN]:
     # Set random seed for reproducibility
@@ -229,13 +259,25 @@ def train_flow(**kwargs) -> tuple[GeneratorDCGAN, DiscriminatorDCGAN]:
                                     tag="t1_")
     return locals()
 
-def predict_flow(netG: GeneratorDCGAN, nz, device, with_pth = None, num = 1, num_in_a_pic: int = 64):
+def predict_flow(netG: GeneratorDCGAN, nz, device, with_pth = None, num = 1, num_in_a_pic: int = 64, type='head'):
     outputs = handle_predict(netG, nz, device, with_pth, num, num_in_a_pic)
-    handle_output_head(outputs)
-
+    if type == 'head':
+        handle_output_head(outputs)
+    elif type == 'all':
+        handle_output_all(outputs)
+    else:
+        raise ValueError("argument type should be 'head' or 'all'")
+ 
 if __name__ == "__main__":
+    # handle args
+    args = argparse.ArgumentParser()
+    args.add_argument("--dataroot", type=str, default="data/skin/SkinsOnlyHead")
+    args.add_argument("--type", type=str, default="head")
+    args.add_argument("--onlypredict", type=bool, default=False)
+    args.add_argument("--gmodelpath", type=str, default="pth_release/t1_g_head.pth")
+    
     params = {
-        "dataroot": "data/skin/SkinsOnlyHead",
+        "dataroot": None,
         "workers": 2,
         "batch_size": 128,
         "image_size": 64,
@@ -254,12 +296,18 @@ if __name__ == "__main__":
         "netG_path": "pth_release/t1_g_head.pth",
     }
     
-    # If you dont want to train, you can comment this two lines
-    # params1 = train_flow(**params)
-    # params.update(params1)
+    params['dataroot'] = args.parse_args().dataroot
+    if params['dataroot'] is None:
+        raise ValueError("dataroot argument is required")
     
-    # If you don't want to train, you can uncomment this line
-    params["netG_path"] = "pth_release/t1_g_head.pth"
+    train_type = args.parse_args().type
+    onlypredict = args.parse_args().onlypredict
+    params['netG_path'] = args.parse_args().gmodelpath
+    
+    
+    if not onlypredict:
+        params1 = train_flow(**params)
+        params.update(params1)
     
     num = 1
     num_in_a_pic = 64
@@ -281,5 +329,5 @@ if __name__ == "__main__":
         netG_path = params.get("netG_path")
     else:
         netG_path = None
-    predict_flow(netG, params['nz'], device, netG_path, num, num_in_a_pic)
+    predict_flow(netG, params['nz'], device, netG_path, num, num_in_a_pic, type=train_type)
     

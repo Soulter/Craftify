@@ -4,24 +4,25 @@ from PIL import Image
 
 def data_clean(path: str):
     '''
-    we remove images which the size is not 64*64 in path
+    remove images which the size is not 64*64 in path
     '''
     stat = {}
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith('.jpg'):
+            if file.endswith('.png'):
                 file_path = os.path.join(root, file)
                 with open(file_path, 'rb') as f:
                     try:
                         img = Image.open(f)
                         stat[img.size] = stat.get(img.size, 0) + 1
-                        if img.size != (64, 64):
+                        if img.size == (64, 64):
+                            # os.makedirs(to_path, exist_ok=True)
+                            # img.save(os.path.join(to_path, file))
+                            # print(f'Save: {file_path}')
                             os.remove(file_path)
                             print(f'Remove: {file_path}')
                     except:
                         print(f'Error: {file_path}')
-                        os.remove(file_path)
-                        print(f'Remove: {file_path}')
                         
     print(stat)
     
