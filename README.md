@@ -17,6 +17,10 @@ The dataset is 64x64 skin images, if you only want to train the head part like m
 |     |--Skins
 ```
 
+## Further work
+- [ ] Try SAGAN(https://export.arxiv.org/pdf/1805.08318)
+- [ ] Train the full skin
+ 
 ## Demo(Head part)
 
 simple readme :p
