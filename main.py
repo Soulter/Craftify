@@ -193,7 +193,7 @@ def handle_output_head(outputs: list[torch.Tensor], path_dir: str = "output/"):
         vutils.save_image(grid, f"{path_dir}/output_head_{i}.png")
         i += 1
 
-def handle_output_all(outputs: list[torch.Tensor], mask, path_dir: str = "output/"):
+def handle_output_all(outputs: list[torch.Tensor], mask = None, path_dir: str = "output/"):
     '''
     将网络的输出进行后处理
     
@@ -212,10 +212,10 @@ def handle_output_all(outputs: list[torch.Tensor], mask, path_dir: str = "output
         
         # 将mask应用到每个图像上
         for i in range(n):
-            output_4[i][0] = output[i][0] * mask
-            output_4[i][1] = output[i][1] * mask
-            output_4[i][2] = output[i][2] * mask
-            output_4[i][3] = torch.tensor(mask) # mask
+            output_4[i][0] = output[i][0] * mask if mask else output[i][0]
+            output_4[i][1] = output[i][1] * mask if mask else output[i][1]
+            output_4[i][2] = output[i][2] * mask if mask else output[i][2]
+            # output_4[i][3] = torch.tensor(mask)
 
         # 输出
         for o in output_4:
